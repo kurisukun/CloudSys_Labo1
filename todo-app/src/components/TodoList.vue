@@ -2,9 +2,9 @@
   <div>
     <ul>
       <li
-        v-for="(todo, index) in todos"
-        :key="index"
-        class="
+          v-for="(todo, index) in todos"
+          :key="index"
+          class="
           border
           rounded
           px-2
@@ -16,26 +16,26 @@
           cursor-pointer
           hover:bg-gray-300
         "
-        :class="{ 'line-through bg-red-200': todo.done }"
-        @click="() => toggleTodo(index)"
+          :class="{ 'line-through bg-red-200': todo.is_done }"
+          @click.prevent="toggleTodo(todo)"
       >
-        {{ todo.name }}
+        {{ todo.title }}
         <button
-          class="ml-2 hover:text-red-600"
-          @click="(e) => deleteTodo(index, e)"
+            class="ml-2 hover:text-red-600"
+            @click.prevent.stop="deleteTodo(todo)"
         >
           <svg
-            width="22"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+              width="22"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
           >
             <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
             />
           </svg>
         </button>
@@ -48,52 +48,53 @@
 <script lang="ts" setup>
 import { ref } from "@vue/reactivity";
 import TodoListInput from "./TodoListInput.vue";
+import axios from "axios";
 
 interface TodoItem {
-  name: string;
-  done: boolean;
+  id: number,
+  title: string,
+  is_done: boolean,
 }
 
-const todos = ref<TodoItem[]>([
-  {
-    name: "Todo list item 1",
-    done: false,
-  },
-  {
-    name: "Todo list item 2",
-    done: false,
-  },
-  {
-    name: "Todo list item 3",
-    done: false,
-  },
-  {
-    name: "Todo list item 4",
-    done: false,
-  },
-]);
+const todos = ref<TodoItem[]>([]);
+fetchTodos();
+
+function fetchTodos() {
+  axios.get('http://localhost:8000/api/v1').then(res => {
+    todos.value = res.data.map(item => ({
+      id: item.id,
+      title: item.title,
+      is_done: item.is_done,
+    }));
+  }).catch(err => {
+    console.log(`Error: ${err}`);
+  })
+}
 
 function addTodo(content: string) {
-  todos.value.push({
-    name: content,
-    done: false,
+  axios.post('http://localhost:8000/api/v1', {
+    title: content,
+    is_done: false,
+  }).then(() => {
+    fetchTodos();
+  }).catch(err => {
+    console.log(`Error: ${err}`)
   });
 }
 
-function deleteTodo(index: number, e: MouseEvent) {
-  e.preventDefault();
-  e.stopPropagation();
-  todos.value = todos.value.filter((todo, i) => {
-    return i !== index;
-  });
+function deleteTodo(item: TodoItem) {
+  axios.delete(`http://localhost:8000/api/v1/${item.id}`).then(() => {
+    fetchTodos();
+  }).catch(err => {
+    console.log(`Error: ${err}`)
+  })
 }
 
-function toggleTodo(index: number) {
-  todos.value = todos.value.map((todo, i) => {
-    if (i === index) {
-      todo.done = !todo.done;
-    }
-    return todo;
-  });
+function toggleTodo(item: TodoItem) {
+  axios.put(`http://localhost:8000/api/v1/toggle/${item.id}`).then(() => {
+    fetchTodos();
+  }).catch(err => {
+    console.log(`Error: ${err}`)
+  })
 }
 </script>

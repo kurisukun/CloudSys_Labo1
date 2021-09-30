@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::prefix('v1')->group(function () {
+    Route::get('/', [ApiController::class, 'index']);
+    Route::post('/', [ApiController::class, 'add']);
+    Route::delete('/{id}', [ApiController::class, 'remove'])->whereNumber('id');
+    Route::put('/toggle/{id}', [ApiController::class, 'toggle'])->whereNumber('id');
 });

@@ -8,5 +8,8 @@ services:
       - "mysql_data:/var/lib/mysql"
     environment:
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: todo
+      MYSQL_USER: todo
+      MYSQL_PASSWORD: todo
 volumes:
   mysql_data:
