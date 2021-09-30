@@ -64,7 +64,7 @@ fetchTodos();
 
 function fetchTodos() {
   axios.get('http://localhost:8000/api/v1').then(res => {
-    todos.value = res.data.map(item => ({
+    todos.value = res.data.map((item: any) => ({
       id: item.id,
       title: item.title,
       is_done: item.is_done,
