@@ -49,12 +49,15 @@
 import { ref } from "@vue/reactivity";
 import TodoListInput from "./TodoListInput.vue";
 import axios from "axios";
+import { Notyf } from "notyf";
 
 interface TodoItem {
   id: number,
   title: string,
   is_done: boolean,
 }
+
+const notyf = new Notyf();
 
 const todos = ref<TodoItem[]>([]);
 fetchTodos();
@@ -67,7 +70,8 @@ function fetchTodos() {
       is_done: item.is_done,
     }));
   }).catch(err => {
-    console.log(`Error: ${err}`);
+    console.log(err);
+    notyf.error(err.toString());
   })
 }
 
@@ -78,7 +82,8 @@ function addTodo(content: string) {
   }).then(() => {
     fetchTodos();
   }).catch(err => {
-    console.log(`Error: ${err}`)
+    console.log(err);
+    notyf.error(err.toString());
   });
 }
 
@@ -86,7 +91,8 @@ function deleteTodo(item: TodoItem) {
   axios.delete(`http://localhost:8000/api/v1/${item.id}`).then(() => {
     fetchTodos();
   }).catch(err => {
-    console.log(`Error: ${err}`)
+    console.log(err);
+    notyf.error(err.toString());
   })
 }
 
@@ -94,7 +100,8 @@ function toggleTodo(item: TodoItem) {
   axios.put(`http://localhost:8000/api/v1/toggle/${item.id}`).then(() => {
     fetchTodos();
   }).catch(err => {
-    console.log(`Error: ${err}`)
+    console.log(err);
+    notyf.error(err.toString());
   })
 }
 </script>
