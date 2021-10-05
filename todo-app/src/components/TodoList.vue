@@ -50,6 +50,7 @@ import { ref } from "@vue/reactivity";
 import TodoListInput from "./TodoListInput.vue";
 import axios from "axios";
 import { Notyf } from "notyf";
+import { API_ENDPOINT } from "../constants";
 
 interface TodoItem {
   id: number,
@@ -63,7 +64,7 @@ const todos = ref<TodoItem[]>([]);
 fetchTodos();
 
 function fetchTodos() {
-  axios.get('http://localhost:8000/api/v1').then(res => {
+  axios.get(`${API_ENDPOINT}/api/v1`).then(res => {
     todos.value = res.data.map((item: any) => ({
       id: item.id,
       title: item.title,
@@ -76,7 +77,7 @@ function fetchTodos() {
 }
 
 function addTodo(content: string) {
-  axios.post('http://localhost:8000/api/v1', {
+  axios.post(`${API_ENDPOINT}/api/v1`, {
     title: content,
     is_done: false,
   }).then(() => {
@@ -88,7 +89,7 @@ function addTodo(content: string) {
 }
 
 function deleteTodo(item: TodoItem) {
-  axios.delete(`http://localhost:8000/api/v1/${item.id}`).then(() => {
+  axios.delete(`${API_ENDPOINT}/api/v1/${item.id}`).then(() => {
     fetchTodos();
   }).catch(err => {
     console.log(err);
@@ -97,7 +98,7 @@ function deleteTodo(item: TodoItem) {
 }
 
 function toggleTodo(item: TodoItem) {
-  axios.put(`http://localhost:8000/api/v1/toggle/${item.id}`).then(() => {
+  axios.put(`${API_ENDPOINT}/api/v1/toggle/${item.id}`).then(() => {
     fetchTodos();
   }).catch(err => {
     console.log(err);
