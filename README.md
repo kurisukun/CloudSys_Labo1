@@ -21,6 +21,7 @@ Laurent: Exoscale
 - Créer une base de donnée appelée `todo` avec un user `todo` et un mot de passe
 - Créer un *security group*
 - Ouvrir le port 3306 du noeud vers l'extérieur
+- Save the instance as an image for later deployments
 
 ### Backend API
 
@@ -69,6 +70,33 @@ DB_USERNAME=todo
 DB_PASSWORD=<choosen password>
 ```
 - Create security group and open port 80
+- Save the instance as an image for later deployments
 
 ### Frontend app
 
+- Install Apache2
+```shell
+sudo apt update
+sudo apt install apache2
+```
+- Install NodeJS
+```shell
+curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+sudo apt-get install -y nodejs
+```
+- Clone the code
+```shell
+git clone https://github.com/kurisukun/CloudSys_Labo1.git
+cd CloudSys_Labo1/todo-app
+```
+- Update the API_ENDPOINT (`todo-app/src/constants.ts`) with the laravel node IP address
+- Build the app
+```shell
+yarn && yarn build
+```
+- Deploy the static app
+```shell
+sudo cp -r ./dist/* /var/www/html
+```
+- Create a security group with port 80 open
+- Save the instance as an image for later deployments
