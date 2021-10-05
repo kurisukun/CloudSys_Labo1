@@ -69,6 +69,11 @@ DB_DATABASE=todo
 DB_USERNAME=todo
 DB_PASSWORD=<choosen password>
 ```
+- Run migration to populate the database
+```shell
+cd /var/www/html/todo-api
+php artisan migrate
+```
 - Create security group and open port 80
 - Save the instance as an image for later deployments
 
