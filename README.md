@@ -19,6 +19,13 @@ Laurent: Exoscale
 
 - Installer MySQL
 - Créer une base de donnée appelée `todo` avec un user `todo` et un mot de passe
+```mysql
+CREATE DATABASE todo;
+CREATE USER 'todo'@'%' IDENTIFIED BY 'todo';
+GRANT ALL PRIVILEGES ON todo.* TO 'todo'@'%';
+FLUSH PRIVILEGES;
+```
+- Configurer le serveur pour écouter sur 0.0.0.0 au lieu de localhost (https://linuxize.com/post/mysql-remote-access/)
 - Créer un *security group*
 - Ouvrir le port 3306 du noeud vers l'extérieur
 - Save the instance as an image for later deployments
