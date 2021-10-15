@@ -19,6 +19,13 @@ Laurent: Exoscale
 
 - Installer MySQL
 - Créer une base de donnée appelée `todo` avec un user `todo` et un mot de passe
+```mysql
+CREATE DATABASE todo;
+CREATE USER 'todo'@'%' IDENTIFIED BY 'todo';
+GRANT ALL PRIVILEGES ON todo.* TO 'todo'@'%';
+FLUSH PRIVILEGES;
+```
+- Configurer le serveur pour écouter sur 0.0.0.0 au lieu de localhost (https://linuxize.com/post/mysql-remote-access/)
 - Créer un *security group*
 - Ouvrir le port 3306 du noeud vers l'extérieur
 - Save the instance as an image for later deployments
@@ -32,6 +39,10 @@ Laurent: Exoscale
 # Apache2 is automatically installed with the php package
 sudo apt update && \
 sudo apt install php php-mbstring php-xml php-dom php-zip php-intl php-mysql composer
+```
+- Enable the rewrite module for Apache2
+```shell
+sudo a2enmod rewrite && sudo systemctl restart apache2
 ```
 - Clone the code
 ```shell
@@ -71,7 +82,7 @@ DB_PASSWORD=<choosen password>
 ```
 - Run migration to populate the database
 ```shell
-cd /var/www/html/todo-api
+cd /var/www/todo-api
 php artisan migrate
 ```
 - Create security group and open port 80
@@ -84,10 +95,11 @@ php artisan migrate
 sudo apt update
 sudo apt install apache2
 ```
-- Install NodeJS
+- Install NodeJS and Yarn
 ```shell
 curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt-get install -y nodejs
+sudo npm install -g yarn
 ```
 - Clone the code
 ```shell
