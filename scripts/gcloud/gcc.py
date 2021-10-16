@@ -66,11 +66,21 @@ request.instance_resource = instance
 op = instance_client.insert(request)
 
 wait_for_operation(PROJECT, ZONE, op.name)
-print("Ok DB")
+
+# GET DB IP ADDRESS
+request = compute_v1.GetInstanceRequest()
+request.instance = DB_NAME
+request.project = PROJECT
+request.zone = ZONE
+op = instance_client.get(request)
+#wait_for_operation(PROJECT, ZONE, op.name)
+db_ip = op.network_interfaces[0].network_i_p
+print(f'Database created at {db_ip}')
 # [END] Database
 
 
 
+print("Creating backend...")
 # [START] Backend
 instance_client = compute_v1.InstancesClient()
 
@@ -91,14 +101,7 @@ instance.name = BACKEND_NAME
 tags = compute_v1.Tags()
 tags.items = ["firewall-backend", "firewall-out"]
 instance.tags = tags
-# GET DB IP ADDRESS
-request = compute_v1.GetInstanceRequest()
-request.instance = DB_NAME
-request.project = PROJECT
-request.zone = ZONE
-op = instance_client.get(request)
-#wait_for_operation(PROJECT, ZONE, op.name)
-db_ip = op.network_interfaces[0].network_i_p
+
 
 backend_script = open(os.path.join(os.path.dirname(__file__), BACKEND_SCRIPT), 'r').read()
 backend_script = backend_script.replace("$__IP_DB_HOST__$", db_ip)
@@ -118,7 +121,16 @@ request.instance_resource = instance
 
 op = instance_client.insert(request)
 wait_for_operation(PROJECT, ZONE, op.name)
-print("Ok BACKEND")
+
+
+# GET BACKEND IP ADDRESS
+request = compute_v1.GetInstanceRequest()
+request.instance = BACKEND_NAME
+request.project = PROJECT
+request.zone = ZONE
+op = instance_client.get(request)
+backend_ip = op.network_interfaces[0].access_configs[0].nat_i_p
+print(f'Backend created at {backend_ip}')
 # [END] Backend
 
 
@@ -144,13 +156,6 @@ instance.name = FRONTEND_NAME
 tags = compute_v1.Tags()
 tags.items = ["firewall-frontend", "firewall-out"]
 instance.tags = tags
-# GET BACKEND IP ADDRESS
-request = compute_v1.GetInstanceRequest()
-request.instance = BACKEND_NAME
-request.project = PROJECT
-request.zone = ZONE
-op = instance_client.get(request)
-backend_ip = op.network_interfaces[0].access_configs[0].nat_i_p
 frontend_script = open(os.path.join(os.path.dirname(__file__), FRONTEND_SCRIPT), 'r').read()
 frontend_script = frontend_script.replace("$__IP_BACKEND_HOST__$", backend_ip)
 
@@ -171,7 +176,7 @@ request.instance_resource = instance
 op = instance_client.insert(request)
 wait_for_operation(PROJECT, ZONE, op.name)
 # [END] Frontend
-print("Ok FRONT")
+
 
 
 request = compute_v1.GetInstanceRequest()
@@ -181,5 +186,6 @@ request.instance = FRONTEND_NAME
 res = instance_client.get(request)
 
 app_ip = res.network_interfaces[0].access_configs[0].nat_i_p
-
+print(f'Frontend created at {app_ip}')
+print("")
 print(f'You can connect to the app here: http://{app_ip}')
